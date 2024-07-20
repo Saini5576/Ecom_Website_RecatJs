@@ -1,0 +1,12 @@
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\bin\Debug\net8.0\infrastructure.deps.json
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\bin\Debug\net8.0\infrastructure.dll
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\bin\Debug\net8.0\infrastructure.pdb
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\obj\Debug\net8.0\infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\obj\Debug\net8.0\infrastructure.AssemblyInfoInputs.cache
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\obj\Debug\net8.0\infrastructure.AssemblyInfo.cs
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\obj\Debug\net8.0\infrastructure.csproj.CoreCompileInputs.cache
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\obj\Debug\net8.0\infrastructure.sourcelink.json
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\obj\Debug\net8.0\infrastructure.dll
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\obj\Debug\net8.0\refint\infrastructure.dll
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\obj\Debug\net8.0\infrastructure.pdb
+D:\asp.net CORE\Clone amazon\productCatalog_Server\Infrastructure\infrastructure\obj\Debug\net8.0\ref\infrastructure.dll

@@ -1,0 +1,12 @@
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\bin\Debug\net8.0\Domain.deps.json
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\bin\Debug\net8.0\Domain.dll
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\bin\Debug\net8.0\Domain.pdb
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\obj\Debug\net8.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\obj\Debug\net8.0\Domain.AssemblyInfoInputs.cache
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\obj\Debug\net8.0\Domain.AssemblyInfo.cs
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\obj\Debug\net8.0\Domain.csproj.CoreCompileInputs.cache
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\obj\Debug\net8.0\Domain.sourcelink.json
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\obj\Debug\net8.0\Domain.dll
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\obj\Debug\net8.0\refint\Domain.dll
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\obj\Debug\net8.0\Domain.pdb
+D:\asp.net CORE\Clone amazon\order_Server\Core\Domain\obj\Debug\net8.0\ref\Domain.dll
