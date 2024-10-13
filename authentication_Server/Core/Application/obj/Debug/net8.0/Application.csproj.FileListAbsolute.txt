@@ -6,3 +6,11 @@ D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\obj\Debug\ne
 D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\obj\Debug\net8.0\Application.dll
 D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\obj\Debug\net8.0\refint\Application.dll
 D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\obj\Debug\net8.0\Application.pdb
+D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\bin\Debug\net8.0\Application.deps.json
+D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\bin\Debug\net8.0\Application.dll
+D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\bin\Debug\net8.0\Application.pdb
+D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\bin\Debug\net8.0\Domain.dll
+D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\bin\Debug\net8.0\Domain.pdb
+D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\obj\Debug\net8.0\Application.csproj.AssemblyReference.cache
+D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\obj\Debug\net8.0\Application.csproj.CopyComplete
+D:\asp.net CORE\Clone amazon\authentication_Server\Core\Application\obj\Debug\net8.0\ref\Application.dll
