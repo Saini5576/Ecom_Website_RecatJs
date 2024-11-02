@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jatin\\Downloads\\test\\productCatalog_Server\\Infrastructure\\infrastructure\\infrastructure.csproj",
+      "projectUniqueName": "C:\\Users\\jatin\\OneDrive\\Documents\\New folder\\productCatalog_Server\\Infrastructure\\infrastructure\\infrastructure.csproj",
       "projectName": "infrastructure",
-      "projectPath": "C:\\Users\\jatin\\Downloads\\test\\productCatalog_Server\\Infrastructure\\infrastructure\\infrastructure.csproj",
+      "projectPath": "C:\\Users\\jatin\\OneDrive\\Documents\\New folder\\productCatalog_Server\\Infrastructure\\infrastructure\\infrastructure.csproj",
       "packagesPath": "C:\\Users\\jatin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jatin\\Downloads\\test\\productCatalog_Server\\Infrastructure\\infrastructure\\obj\\",
+      "outputPath": "C:\\Users\\jatin\\OneDrive\\Documents\\New folder\\productCatalog_Server\\Infrastructure\\infrastructure\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

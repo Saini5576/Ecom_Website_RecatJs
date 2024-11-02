@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jatin\\Downloads\\test\\order_Server\\Infrastructure\\Infrastructure\\Infrastructure.csproj": {}
+    "C:\\Users\\jatin\\OneDrive\\Documents\\New folder\\order_Server\\Infrastructure\\Infrastructure\\Infrastructure.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jatin\\Downloads\\test\\order_Server\\Infrastructure\\Infrastructure\\Infrastructure.csproj": {
+    "C:\\Users\\jatin\\OneDrive\\Documents\\New folder\\order_Server\\Infrastructure\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jatin\\Downloads\\test\\order_Server\\Infrastructure\\Infrastructure\\Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\jatin\\OneDrive\\Documents\\New folder\\order_Server\\Infrastructure\\Infrastructure\\Infrastructure.csproj",
         "projectName": "Infrastructure",
-        "projectPath": "C:\\Users\\jatin\\Downloads\\test\\order_Server\\Infrastructure\\Infrastructure\\Infrastructure.csproj",
+        "projectPath": "C:\\Users\\jatin\\OneDrive\\Documents\\New folder\\order_Server\\Infrastructure\\Infrastructure\\Infrastructure.csproj",
         "packagesPath": "C:\\Users\\jatin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jatin\\Downloads\\test\\order_Server\\Infrastructure\\Infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\jatin\\OneDrive\\Documents\\New folder\\order_Server\\Infrastructure\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
