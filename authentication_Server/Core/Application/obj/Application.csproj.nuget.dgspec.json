@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Application\\Application.csproj": {}
+    "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Application\\Application.csproj": {}
   },
   "projects": {
-    "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Application\\Application.csproj": {
+    "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Application\\Application.csproj",
+        "projectUniqueName": "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Application\\Application.csproj",
+        "projectPath": "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Application\\Application.csproj",
         "packagesPath": "C:\\Users\\jatin\\.nuget\\packages\\",
-        "outputPath": "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Application\\obj\\",
+        "outputPath": "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -33,8 +33,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Domain\\Domain.csproj": {
-                "projectPath": "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Domain\\Domain.csproj"
+              "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Domain\\Domain.csproj"
               }
             }
           }
@@ -49,21 +49,49 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Azure.Storage.Blobs": {
+              "target": "Package",
+              "version": "[12.20.0, )"
+            },
             "MediatR.Extensions.Microsoft.DependencyInjection": {
               "target": "Package",
-              "version": "[11.1.0, )"
+              "version": "[11.0.0, )"
             },
-            "Microsoft.AspNetCore.Http.Features": {
+            "Microsoft.AspNetCore.Http.Abstractions": {
               "target": "Package",
-              "version": "[5.0.17, )"
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[7.0.17, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.17, )"
             },
             "Microsoft.Extensions.Configuration": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[7.0.0, )"
             },
-            "Microsoft.Extensions.DependencyInjection": {
+            "RestSharp": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[106.12.0, )"
+            },
+            "WindowsAzure.Storage": {
+              "target": "Package",
+              "version": "[7.2.1, )"
             }
           },
           "imports": [
@@ -86,14 +114,14 @@
         }
       }
     },
-    "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Domain\\Domain.csproj": {
+    "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Domain\\Domain.csproj",
+        "projectUniqueName": "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Domain\\Domain.csproj",
+        "projectPath": "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Domain\\Domain.csproj",
         "packagesPath": "C:\\Users\\jatin\\.nuget\\packages\\",
-        "outputPath": "D:\\asp.net CORE\\Clone amazon\\authentication_Server\\Core\\Domain\\obj\\",
+        "outputPath": "C:\\Users\\jatin\\Downloads\\test\\authentication_Server\\Core\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -126,6 +154,12 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[7.0.20, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
