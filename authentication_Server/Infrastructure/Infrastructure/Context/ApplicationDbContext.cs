@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Context
 {
+    /// <summary>
+    /// ApplicationDbContext
+    /// </summary>
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
