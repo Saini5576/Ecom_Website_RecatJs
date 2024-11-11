@@ -9,6 +9,9 @@ namespace Domain.Entities
 {
     public class ApplicationUser :IdentityUser
     {
-
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiryTime { get; set; }
+        public byte[] ProfilePicture { get; set; }
+        public string Name { get; set; }
     }
 }
