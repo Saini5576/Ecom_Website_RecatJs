@@ -1,65 +1,80 @@
-# User-specific files
+## Visual Studio temporary files
 .vs/
-.vscode/
-.idea/
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+
+# User-specific files
+*.rsuser
+*.suo
 *.user
 *.userosscache
-*.suo
-*.userprefs
+*.sln.docstates
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
 
-# Windows Installer directories
-bin/
-obj/
+# Visual Studio cache/options directory
+.vs/
 
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
+# NuGet Packages
+*.nupkg
+*.nuget.props
+*.nuget.targets
+packages/
+*.nupkg
+# NuGet v3's project.json files produces more ignorable files
+*.nuget.props
+*.nuget.targets
 
-# .NET Core files
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# .NET Core
 project.lock.json
 project.fragment.lock.json
 artifacts/
 
-# ASP.NET Scaffolding
-ScaffoldingReadMe.txt
-
-# .NET Core Build Files
-/bin/
-/obj/
-
-# ASP.NET Core Temporary Files
-/wwwroot/
-
-# Npm packages
-/node_modules/
-
-# VS Code directories
-.vscode/
-
-# JetBrains Rider
-.idea/
-
-# macOS
-.DS_Store
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# JetBrains Rider
-.idea/
-
-# ASP.NET Core environment variables
-.env
-
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.pdb
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
