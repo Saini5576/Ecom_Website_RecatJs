@@ -1,6 +1,6 @@
-﻿using Application.DTO;
-using Domain.BaseResponse;
+﻿using Domain.BaseResponse;
+using Domain.DTO;
 using MediatR;
 
 namespace Application.Features.Authentication.Command;
-public record RegisterCommand(RegisterDto registerPayload) : IRequest<Response>;
+public record RegisterCommand(RegisterDto register) : IRequest<Response>;

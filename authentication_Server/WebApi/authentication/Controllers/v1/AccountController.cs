@@ -1,4 +1,9 @@
-﻿using Domain.Entities;
+﻿using Application.Features.Account.Command;
+using Application.Features.Authentication.Command;
+using Domain.BaseResponse;
+using Domain.DTO;
+using Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,105 +15,39 @@ using System.Text;
 
 namespace authentication.Controllers.v1
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    [Route("api/[controller]")]
+    public class AccountController : BaseApiController
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
+        private readonly IMediator _mediator;
 
-        public AccountController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AccountController(IMediator mediator)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _configuration = configuration;
+             _mediator = mediator;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto model)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(Response))]
+        public async Task<IActionResult> Register([FromBody] RegisterCommand registerCommand)
         {
-            var userExists = await _userManager.FindByNameAsync(model.Email);
-            //var user = new IdentityUser { UserName = model.Username, Email = model.Email };
-            ApplicationUser user = new ApplicationUser()
-            {
-                Email = model.Email,                
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username,
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            if (ModelState.IsValid)
+                return Ok(await _mediator.Send(registerCommand));
+            return BadRequest(ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
 
-            if (result.Succeeded)
-            {
-                //await _userManager.AddToRoleAsync(user, "User");
-                return Ok(new { message = "User registered successfully" });
-            }
-
-            return BadRequest(result.Errors);
         }
-
+        
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto model)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(Response))]
+        public async Task<IActionResult> Login([FromBody] LoginCommand loginCommand)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
-            {
-                var userRoles = await _userManager.GetRolesAsync(user);
-
-                var authClaims = new List<Claim>
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName!),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                };
-
-                authClaims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
-
-                var token = new JwtSecurityToken(
-                    issuer: _configuration["Jwt:Issuer"],
-                    expires: DateTime.Now.AddMinutes(double.Parse(_configuration["Jwt:ExpiryMinutes"]!)),
-                    claims: authClaims,
-                    signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)),
-                    SecurityAlgorithms.HmacSha256));
-
-                return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
-            }
-
-            return Unauthorized();
+            if (ModelState.IsValid)
+                return Ok(await _mediator.Send(loginCommand));
+            return BadRequest(ModelState.Values.SelectMany(v=>v.Errors.Select(e=> e.ErrorMessage)));
         }
 
-        [HttpPost("add-role")]
-        public async Task<IActionResult> AddRole([FromBody] string role)
-        {
-            if (!await _roleManager.RoleExistsAsync(role))
-            {
-                var result = await _roleManager.CreateAsync(new IdentityRole(role));
-                if (result.Succeeded)
-                {
-                    return Ok(new { message = "Role added successfully" });
-                }
-
-                return BadRequest(result.Errors);
-            }
-
-            return BadRequest("Role already exists");
-        }
-
-        [HttpPost("assign-role")]
-        public async Task<IActionResult> AssignRole([FromBody] UserRole model)
-        {
-            var user = await _userManager.FindByNameAsync(model.Username);
-            if (user == null)
-            {
-                return BadRequest("User not found");
-            }
-
-            var result = await _userManager.AddToRoleAsync(user, model.Role);
-            if (result.Succeeded)
-            {
-                return Ok(new { message = "Role assigned successfully" });
-            }
-
-            return BadRequest(result.Errors);
-        }
     }
 }
