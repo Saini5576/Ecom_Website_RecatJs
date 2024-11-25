@@ -12,6 +12,7 @@ using Application.DTOMapping;
 using Domain.IServices;
 using Infrastructure.Services;
 using Domain.Configuration;
+using Infrastructure.ExceptionHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -42,7 +45,7 @@ builder.Services.AddAuthentication(options =>
         option.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidateAudience = true,  // Also validate the audience for better security
+            ValidateAudience = true, 
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"], 
@@ -53,7 +56,6 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.Configure<JwtKeyConfiguration>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
@@ -63,6 +65,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -75,7 +78,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseExceptionHandler( _ => { });
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

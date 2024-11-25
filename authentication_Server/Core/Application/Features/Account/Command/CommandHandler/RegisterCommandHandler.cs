@@ -12,13 +12,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Azure.Core;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using static Domain.Constant.EmailType;
+using System.Text.Encodings.Web;
 
 namespace Application.Features.Authentication.Command.CommandHandler
 {
     public class RegisterCommandHandler(
         UserManager<ApplicationUser> _userManager,
         RoleManager<IdentityRole> _roleManager,
-        IMapper _mapper,
+        IEmailSender _emailSender,
+    IMapper _mapper,
          ILogger<RegisterCommandHandler> _logger
         //IEmailSender _emailSender,
         //IOptions<URLConfiguration> _config
@@ -54,7 +59,7 @@ namespace Application.Features.Authentication.Command.CommandHandler
                 };
 
                 // Create the user with the provided password
-                IdentityResult createUser = await _userManager.CreateAsync(user, request.register.Password);
+                var createUser = await _userManager.CreateAsync(user, request.register.Password);
                 cancellationToken.ThrowIfCancellationRequested();
 
                 // If creation fails, return the errors as a response
@@ -68,14 +73,33 @@ namespace Application.Features.Authentication.Command.CommandHandler
                 // Ensure roles exist and assign the user to a role
                 await EnsureRolesExist();
 
-                // Assign the "Admin" role (this can be adjusted based on your requirements)
-                var roleResult = await _userManager.AddToRoleAsync(user, RoleNames.Admin);
+                var roleResult = await _userManager.AddToRoleAsync(user, RoleNames.User);
+                string emailconfirmationtoken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 if (!roleResult.Succeeded)
                 {
+                    if (string.IsNullOrEmpty(emailconfirmationtoken))
+                        throw new Exception("Something went wrong");
+
                     // Log any role assignment failures and return a response
                     _logger.LogError("Failed to assign role to user: {RoleErrors}", string.Join(", ", roleResult.Errors.Select(e => e.Description)));
                     return Response.FailureResponse("User created but failed to assign roles.");
                 }
+
+                //string callback_url = GenerateCallbackUrl(
+                //           frontendUrl: _config.Value!.FrontEndBaseURL!, email: request.registerPayload.Email,
+                //           token: emailconfirmationtoken, UrlType.EmailConfirmation);
+
+                string callback_url = "";
+
+                string htmlMessage = string.Format(EmailBodyMessages.ConfirmEmailTemplate,
+                                           HtmlEncoder.Default.Encode(callback_url),
+                                           user.Name);
+
+                await _emailSender.SendEmailAsync(
+                email: user.Email,
+                subject: EmailSubjects.ConfirmEmail,
+                htmlMessage: htmlMessage
+            );
 
                 return Response.SuccessResponse("User registered successfully.");
             }

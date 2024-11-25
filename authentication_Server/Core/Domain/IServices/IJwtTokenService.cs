@@ -1,7 +1,5 @@
-﻿
-
-using Domain.BaseResponse;
-using Domain.Entities;
+﻿using Domain.Entities;
+using Domain.Model;
 
 namespace Domain.IServices;
 public interface IJwtTokenService

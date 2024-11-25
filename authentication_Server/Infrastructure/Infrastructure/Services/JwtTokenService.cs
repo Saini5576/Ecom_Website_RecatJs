@@ -1,7 +1,7 @@
-﻿using Domain.BaseResponse;
-using Domain.Configuration;
+﻿using Domain.Configuration;
 using Domain.Entities;
 using Domain.IServices;
+using Domain.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -62,8 +62,7 @@ public class JwtTokenService(
             throw new Exception("Something went wrong. JWT token could not be generated.");
         }
 
-        // Return the token response with expiration date
-        return new TokenResponse(token, DateTime.UtcNow.AddMinutes(expiryMinutes));
+        return new TokenResponse() { Token = token, Expiration = DateTime.Now.AddMinutes(_options.Value.ExpiryMinutes) };
     }
 
     private async ValueTask<List<Claim>> GetClaims(ApplicationUser claim, CancellationToken cancellationToken = default)
@@ -73,7 +72,7 @@ public class JwtTokenService(
         List<Claim> claims = new List<Claim>
         {
             new("UserId",claim.Id.ToString()),
-            new("User",claim.Email),
+            new("User",claim.Email)
         };
         cancellationToken.ThrowIfCancellationRequested();
         IList<string> claimRole = await _userManager.GetRolesAsync(claim);

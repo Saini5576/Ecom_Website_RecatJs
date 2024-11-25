@@ -1,6 +1,5 @@
 ﻿using Domain.BaseResponse;
 using Domain.DTO;
-using Domain.Model;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -10,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Account.Command
 {
-    public record LoginCommand (LoginDto Login) : IRequest<Response<LoginResponse>>;
+    public record EmailConfirmedCommand(EmailConfirmedDto EmailConfirmed) : IRequest<Response>;
 }

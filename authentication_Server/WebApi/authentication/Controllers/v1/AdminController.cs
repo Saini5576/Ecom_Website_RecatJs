@@ -1,5 +1,6 @@
 ﻿using Application.Features.Account.Command;
 using Application.Features.Account.Query;
+using Azure;
 using Domain.BaseResponse;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,7 +22,6 @@ namespace authentication.Controllers.v1
         [HttpPost("add-role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesErrorResponseType(typeof(Response))]
         public async Task<IActionResult> AddRole([FromBody] CreateRoleCommand createRoleCommand)
         {
             if (ModelState.IsValid)
@@ -32,7 +32,6 @@ namespace authentication.Controllers.v1
         [HttpPost("assign-role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesErrorResponseType(typeof(Response))]
         public async Task<IActionResult> AssignRole([FromBody] AssignRoleCommand assignRoleCommand)
         {
             if (ModelState.IsValid)
@@ -42,12 +41,11 @@ namespace authentication.Controllers.v1
         [HttpGet("get-role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesErrorResponseType(typeof(Response))]
         public async Task<IActionResult> GetRole()
         {
             if (ModelState.IsValid)
             {
-                GetAllRolesQuery getAllRoles = new GetAllRolesQuery();
+                GetAllRolesQuery getAllRoles = new GetAllRolesQuery();   
                 return Ok(await _mediator.Send(getAllRoles));
             }
             return BadRequest(ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
@@ -55,7 +53,6 @@ namespace authentication.Controllers.v1
         [HttpDelete("delete-role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesErrorResponseType(typeof(Response))]
         public async Task<IActionResult> DeleteRole(DeleteRoleQuery deleteRoleQuery)
         {
             if (ModelState.IsValid)
