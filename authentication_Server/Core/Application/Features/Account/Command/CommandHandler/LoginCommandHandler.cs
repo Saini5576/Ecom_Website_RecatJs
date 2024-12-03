@@ -30,7 +30,7 @@ namespace Application.Features.Account.Command.CommandHandler
         public async Task<Response<LoginResponse?>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             if (request.Login == null)
-                throw new ArgumentNullException(nameof(request.Login), "Login payload cannot be null");
+            return Response<LoginResponse>.FailureResponse("Login payload cannot be null");
 
             // Ensure that cancellation is properly handled
             cancellationToken.ThrowIfCancellationRequested();
@@ -40,10 +40,10 @@ namespace Application.Features.Account.Command.CommandHandler
             // Attempt to find the user by email
             ApplicationUser user = await _userManager.FindByEmailAsync(request.Login.Email);
             if (user == null)
-                throw new Exception("User with the provided email address does not exist.");
+            return Response<LoginResponse>.FailureResponse("User with the provided email address does not exist.");
 
             if (!user.EmailConfirmed)
-                throw new Exception("Email not verified! Please verify your email.");
+            return Response<LoginResponse>.FailureResponse("Email not verified! Please verify your email.");
 
             // Attempt to sign in the user with the provided password
             SignInResult signInResult = await _signInManager.PasswordSignInAsync(user, request.Login.Password, false, lockoutOnFailure: true);
@@ -60,7 +60,7 @@ namespace Application.Features.Account.Command.CommandHandler
 
             if (signInResult.IsLockedOut)
             {
-                throw new Exception("Your account is temporarily locked due to multiple failed login attempts. Please try again in 2 minutes.");
+                return Response<LoginResponse>.FailureResponse("Your account is temporarily locked due to multiple failed login attempts. Please try again in 2 minutes.");
             }
 
 
@@ -69,14 +69,21 @@ namespace Application.Features.Account.Command.CommandHandler
                     Message: "Invalid email or password.");
         }
 
+        #region ValidateLogin
+
         private void ValidateLogin(LoginDto login)
         {
             if (string.IsNullOrEmpty(login.Email))
                 throw new ArgumentException("Email cannot be empty", nameof(login.Email));
 
+
             if (string.IsNullOrEmpty(login.Password))
                 throw new ArgumentException("Password cannot be empty", nameof(login.Password));
         }
+
+        #endregion ValidateLogin
+
+        #region UpdateUserWithRefreshTokenAsync
 
         private async Task UpdateUserWithRefreshTokenAsync(ApplicationUser user, CancellationToken cancellationToken)
         {
@@ -85,6 +92,9 @@ namespace Application.Features.Account.Command.CommandHandler
             _context.Users.Update(user);
             await _context.SaveChangesAsync(cancellationToken); // Use async save method
         }
+        #endregion UpdateUserWithRefreshTokenAsync
+
+        #region GenerateRefreshToken
 
         private string GenerateRefreshToken()
         {
@@ -95,8 +105,7 @@ namespace Application.Features.Account.Command.CommandHandler
                 return Convert.ToBase64String(randomNumber);
             }
         }
-
-
+        #endregion GenerateRefreshToken
 
     }
 }

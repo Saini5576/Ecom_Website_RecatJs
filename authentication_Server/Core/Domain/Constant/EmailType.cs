@@ -385,7 +385,6 @@ namespace Domain.Constant
         public static class EmailSubjects
         {
             public const string ConfirmEmail = "Confirm Email Request";
-            public const string OTPVerify = "Confirm You'r OTP";
             public const string ForgotPassword = "Password Reset Request";
             public const string OrderConfirm = "Order is shipped";
         }

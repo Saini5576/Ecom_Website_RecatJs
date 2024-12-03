@@ -28,7 +28,7 @@ namespace Application.Features.Account.Command.CommandHandler
             {
                 // Log the error for traceability and throw a more specific exception
                 _logger.LogWarning($"Password reset attempt failed for non-existing user: {request.resetPassword.Email}");
-                throw new  ArgumentNullException($"User with email {request.resetPassword.Email} not found. Please enter a valid email.");
+                return Response.FailureResponse($"User with email {request.resetPassword.Email} not found. Please enter a valid email.");
             }
 
             // Check for cancellation again before proceeding with the password reset
@@ -69,9 +69,7 @@ namespace Application.Features.Account.Command.CommandHandler
             // Log the errors for traceability
             var errorMessages = errors.Select(e => e.Description).ToList();
             _logger.LogError("Password reset failed: " + string.Join(", ", errorMessages));
-
-            // Aggregate and throw a custom exception
-            throw new Exception($"Password reset failed: {string.Join(", ", errorMessages)}");
+            return Response.FailureResponse($"Password reset failed: {string.Join(", ", errorMessages)}");
         }
     }
 }

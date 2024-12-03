@@ -28,7 +28,8 @@ namespace Application.Features.Account.Command.CommandHandler
             // Validate the request
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request), "Request cannot be null");
+                return Response<TokenResponse>.FailureResponse("Request cannot be null");
+
             }
 
             // Extract tokens from the request
@@ -58,8 +59,7 @@ namespace Application.Features.Account.Command.CommandHandler
             // Return success response with the new access token
             return new Response<TokenResponse>(content: accessToken, message: "Access token successfully generated", success: true);
         }
-
-
+        #region GetPrincipalFromExpiredToken
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
             var secretKey = _options.Value.SecretKey;
@@ -95,8 +95,8 @@ namespace Application.Features.Account.Command.CommandHandler
                 // Log the exception (consider using a logging framework)
                 throw new SecurityTokenException("Token validation failed", ex);
             }
-        }      
-
+        }
+        #endregion GetPrincipalFromExpiredToken
 
     }
 }

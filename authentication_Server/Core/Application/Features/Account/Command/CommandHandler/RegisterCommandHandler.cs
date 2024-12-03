@@ -36,19 +36,15 @@ namespace Application.Features.Authentication.Command.CommandHandler
             cancellationToken.ThrowIfCancellationRequested();
 
             if (request.register == null)
-            {
-                throw new ArgumentNullException(nameof(request.register), "Register payload cannot be null.");
-            }
+                return Response.FailureResponse("Register payload cannot be null.");
 
             try
             {
                 // Check if the email is already taken
                 var existingUser = await _userManager.FindByNameAsync(request.register.Email);
                 if (existingUser != null)
-                {
                     return Response.FailureResponse("The email address is already in use. Please choose a different one.");
-                }
-
+                #region Create User
                 // Map to ApplicationUser directly without needing a second mapping step
                 var user = new ApplicationUser
                 {
@@ -61,7 +57,7 @@ namespace Application.Features.Authentication.Command.CommandHandler
                 // Create the user with the provided password
                 var createUser = await _userManager.CreateAsync(user, request.register.Password);
                 cancellationToken.ThrowIfCancellationRequested();
-
+                #endregion Create User
                 // If creation fails, return the errors as a response
                 if (!createUser.Succeeded)
                 {
@@ -70,7 +66,7 @@ namespace Application.Features.Authentication.Command.CommandHandler
                     return Response.FailureResponse($"User creation failed: {errorMessages}");
                 }
 
-                // Ensure roles exist and assign the user to a role
+                #region Ensure roles exist and assign the user to a role
                 await EnsureRolesExist();
 
                 var roleResult = await _userManager.AddToRoleAsync(user, RoleNames.User);
@@ -78,16 +74,21 @@ namespace Application.Features.Authentication.Command.CommandHandler
                 if (!roleResult.Succeeded)
                 {
                     if (string.IsNullOrEmpty(emailconfirmationtoken))
-                        throw new Exception("Something went wrong");
+                        return Response.FailureResponse("Something went wrong");
 
                     // Log any role assignment failures and return a response
                     _logger.LogError("Failed to assign role to user: {RoleErrors}", string.Join(", ", roleResult.Errors.Select(e => e.Description)));
                     return Response.FailureResponse("User created but failed to assign roles.");
                 }
 
+                #endregion Ensure roles exist and assign the user to a role
+
+                #region ConfirmEmail
+
                 //string callback_url = GenerateCallbackUrl(
                 //           frontendUrl: _config.Value!.FrontEndBaseURL!, email: request.registerPayload.Email,
                 //           token: emailconfirmationtoken, UrlType.EmailConfirmation);
+
 
                 string callback_url = "";
 
@@ -99,6 +100,7 @@ namespace Application.Features.Authentication.Command.CommandHandler
                 email: user.Email,
                 subject: EmailSubjects.ConfirmEmail,
                 htmlMessage: htmlMessage
+                #endregion ConfirmEmail
             );
 
                 return Response.SuccessResponse("User registered successfully.");
@@ -110,6 +112,8 @@ namespace Application.Features.Authentication.Command.CommandHandler
                 return Response.FailureResponse($"An error occurred: {ex.Message}");
             }
         }
+
+        #region EnsureRolesExist
 
         private async Task EnsureRolesExist()
         {
@@ -129,7 +133,7 @@ namespace Application.Features.Authentication.Command.CommandHandler
                 }
             }
         }
-
+        #endregion EnsureRolesExist
 
     }
 }

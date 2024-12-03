@@ -45,7 +45,7 @@ namespace Application.Features.Account.Command.CommandHandler
             if (string.IsNullOrWhiteSpace(request.ForgotPassword?.Email))
             {
                 _logger.LogWarning("ForgotPassword request failed: Email is required.");
-                throw new ArgumentNullException(nameof(request.ForgotPassword.Email), "Email address cannot be empty.");
+                return Response.FailureResponse("Email address cannot be empty.");
             }
 
             ApplicationUser user = await _userManager.FindByEmailAsync(request.ForgotPassword.Email);

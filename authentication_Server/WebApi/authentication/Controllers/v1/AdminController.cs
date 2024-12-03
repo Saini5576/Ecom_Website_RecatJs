@@ -19,15 +19,6 @@ namespace authentication.Controllers.v1
         {
             _mediator = mediator;
         }
-        [HttpPost("add-role")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddRole([FromBody] CreateRoleCommand createRoleCommand)
-        {
-            if (ModelState.IsValid)
-                return Ok(await _mediator.Send(createRoleCommand));
-            return BadRequest(ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
-        }
 
         [HttpPost("assign-role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -49,15 +40,6 @@ namespace authentication.Controllers.v1
                 return Ok(await _mediator.Send(getAllRoles));
             }
             return BadRequest(ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
-        }
-        [HttpDelete("delete-role")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> DeleteRole(DeleteRoleQuery deleteRoleQuery)
-        {
-            if (ModelState.IsValid)
-                return Ok(await _mediator.Send(deleteRoleQuery));
-            return BadRequest(ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
-        }
+        }        
     }
 }

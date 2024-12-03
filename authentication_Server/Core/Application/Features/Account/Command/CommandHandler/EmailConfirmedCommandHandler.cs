@@ -26,73 +26,75 @@ namespace Application.Features.Account.Command.CommandHandler
 
         public async Task<Response> Handle(EmailConfirmedCommand request, CancellationToken cancellationToken)
         {
+            // Early validation for null or empty request data
             if (request == null)
-                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+            {
+                _logger.LogWarning("EmailConfirmedCommand request is null.");
+                return Response.FailureResponse("Request cannot be null.");
+            }
 
             var emailConfirmed = request.EmailConfirmed;
+
             if (emailConfirmed == null)
-                throw new ArgumentNullException(nameof(request.EmailConfirmed), "Email confirmation data cannot be null.");
+            {
+                _logger.LogWarning("EmailConfirmed data is null.");
+                return Response.FailureResponse("Email confirmation data cannot be null.");
+            }
 
             if (string.IsNullOrWhiteSpace(emailConfirmed.Email))
-                throw new ArgumentException("Email cannot be null or empty.", nameof(emailConfirmed.Email));
+            {
+                _logger.LogWarning("Email is null or empty for email confirmation request.");
+                return Response.FailureResponse("Email cannot be null or empty.");
+            }
 
             if (string.IsNullOrWhiteSpace(emailConfirmed.Token))
-                throw new ArgumentException("Token cannot be null or empty.", nameof(emailConfirmed.Token));
+            {
+                _logger.LogWarning("Token is null or empty for email confirmation request.");
+                return Response.FailureResponse("Token cannot be null or empty.");
+            }
 
             try
             {
                 // Log the start of email confirmation process
-                _logger.LogInformation("Attempting to confirm email for user with email: {Email}.", emailConfirmed.Email);
+                _logger.LogInformation("Starting email confirmation process for user with email: {Email}.", emailConfirmed.Email);
 
-                // Find the user by email
-                var findUser = await _userManager.FindByEmailAsync(emailConfirmed.Email);
-                if (findUser == null)
+                // Retrieve user by email
+                var user = await _userManager.FindByEmailAsync(emailConfirmed.Email);
+
+                if (user == null)
                 {
-                    // Log if user is not found
-                    _logger.LogWarning("User with email {Email} not found.", emailConfirmed.Email);
-                    return new Response
-                    {
-                        Success = false,
-                        Message = "User not found."
-                    };
+                    // Log user not found scenario
+                    _logger.LogWarning("User with email {Email} not found in the system.", emailConfirmed.Email);
+                    return Response.FailureResponse("User not found.");
                 }
 
-                // Confirm the user's email
-                var emailConfirmationResult = await _userManager.ConfirmEmailAsync(findUser, emailConfirmed.Token);
+                // Attempt to confirm the user's email using the provided token
+                var emailConfirmationResult = await _userManager.ConfirmEmailAsync(user, emailConfirmed.Token);
+
                 if (!emailConfirmationResult.Succeeded)
                 {
-                    // Log error if email confirmation fails
-                    _logger.LogError("Email confirmation failed for user {Email}. Errors: {Errors}",
-                        emailConfirmed.Email, string.Join(", ", emailConfirmationResult.Errors.Select(e => e.Description)));
+                    // Log detailed errors if email confirmation fails
+                    var errorMessages = string.Join(", ", emailConfirmationResult.Errors.Select(e => e.Description));
+                    _logger.LogError("Email confirmation failed for user {Email}. Errors: {Errors}", emailConfirmed.Email, errorMessages);
 
-                    return new Response
-                    {
-                        Success = false,
-                        Message = "Email confirmation failed."
-                    };
+                    return Response.FailureResponse($"Email confirmation failed. {errorMessages}");
                 }
 
                 // Log successful confirmation
-                _logger.LogInformation("Email confirmed successfully for user {Email}.", emailConfirmed.Email);
+                _logger.LogInformation("Email confirmed successfully for user with email: {Email}.", emailConfirmed.Email);
 
-                return new Response
-                {
-                    Success = true,
-                    Message = "Email confirmed successfully."
-                };
+                return Response.SuccessResponse("Email confirmed successfully.");
             }
             catch (Exception ex)
             {
-                // Log the exception
-                _logger.LogError(ex, "An error occurred while confirming email for {Email}.", emailConfirmed.Email);
+                // Log detailed exception for debugging
+                _logger.LogError(ex, "An error occurred while confirming email for user with email: {Email}.", emailConfirmed.Email);
 
-                return new Response
-                {
-                    Success = false,
-                    Message = "An error occurred while processing your request."
-                };
+                // Return a general error response, but ensure that the exception message is logged for troubleshooting
+                return Response.FailureResponse($"An error occurred while processing your request. Please try again later. Error: {ex.Message}");
             }
         }
+
     }
 
 }
