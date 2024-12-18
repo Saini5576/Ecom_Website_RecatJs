@@ -68,7 +68,7 @@ namespace authentication.Controllers.v1
             if (ModelState.IsValid)
                 return Ok(await _mediator.Send(forgotPasswordCommand));
             return BadRequest(ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
-        }
+            }
         [HttpPost("reset-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

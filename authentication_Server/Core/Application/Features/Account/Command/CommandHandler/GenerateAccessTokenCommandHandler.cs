@@ -28,15 +28,37 @@ namespace Application.Features.Account.Command.CommandHandler
             // Validate the request
             if (request == null)
             {
-                return Response<TokenResponse>.FailureResponse("Request cannot be null");
-
+                return Response<TokenResponse>.FailureResponse(
+                    "Request cannot be null",
+                    new ErrorModel
+                    {
+                        Error = "RequestNull",
+                        ErrorLocation = "GenerateAccessTokenCommandHandler",
+                        UserMessage = "The request cannot be null. Please try again.",
+                        DeveloperMessage = "The request object was null."
+                    }
+                );
             }
 
-            // Extract tokens from the request
-            string refreshToken = request.refreshToken.RefreshToken;
-            
+            // Extract the refresh token from the request
+            string refreshToken = request.refreshToken?.RefreshToken;
 
-            // Retrieve the user from the database
+            // Validate refresh token
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                return Response<TokenResponse>.FailureResponse(
+                    "Refresh token cannot be empty",
+                    new ErrorModel
+                    {
+                        Error = "EmptyRefreshToken",
+                        ErrorLocation = "GenerateAccessTokenCommandHandler",
+                        UserMessage = "Refresh token is required for token generation.",
+                        DeveloperMessage = "The refresh token is missing or empty."
+                    }
+                );
+            }
+
+            // Retrieve the user from the database using the refresh token
             ApplicationUser user = await _userManager.Users
                 .FirstOrDefaultAsync(x => x.RefreshToken == refreshToken, cancellationToken);
 
@@ -44,22 +66,45 @@ namespace Application.Features.Account.Command.CommandHandler
             if (user == null)
             {
                 // Log failed attempt for invalid user
-                return Response<TokenResponse>.FailureResponse("User not found");
+                return Response<TokenResponse>.FailureResponse(
+                    "User not found with the provided refresh token",
+                    new ErrorModel
+                    {
+                        Error = "UserNotFound",
+                        ErrorLocation = "GenerateAccessTokenCommandHandler",
+                        UserMessage = "No user found with the provided refresh token.",
+                        DeveloperMessage = "The user associated with the refresh token was not found."
+                    }
+                );
             }
 
             if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 // Consider logging invalid refresh token attempt
-                return Response<TokenResponse>.FailureResponse("Invalid refresh token or token has expired");
+                return Response<TokenResponse>.FailureResponse(
+                    "Invalid refresh token or token has expired",
+                    new ErrorModel
+                    {
+                        Error = "InvalidOrExpiredToken",
+                        ErrorLocation = "GenerateAccessTokenCommandHandler",
+                        UserMessage = "The refresh token is either invalid or expired. Please request a new token.",
+                        DeveloperMessage = "The refresh token is invalid or expired."
+                    }
+                );
             }
 
             // Generate new access token
-            TokenResponse accessToken = await _token.GenerateJwtToken(user);            
+            TokenResponse accessToken = await _token.GenerateJwtToken(user);
 
             // Return success response with the new access token
-            return new Response<TokenResponse>(content: accessToken, message: "Access token successfully generated", success: true);
+            return Response<TokenResponse>.SuccessResponse(
+                accessToken,
+                "Access token successfully generated"
+            );
         }
-        #region GetPrincipalFromExpiredToken
+         
+
+        // The `GetPrincipalFromExpiredToken` function remains unchanged, but ensure you handle any potential exception.
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
             var secretKey = _options.Value.SecretKey;
@@ -96,7 +141,7 @@ namespace Application.Features.Account.Command.CommandHandler
                 throw new SecurityTokenException("Token validation failed", ex);
             }
         }
-        #endregion GetPrincipalFromExpiredToken
+
 
     }
 }

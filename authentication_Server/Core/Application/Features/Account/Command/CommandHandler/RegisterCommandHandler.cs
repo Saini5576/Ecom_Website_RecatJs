@@ -16,6 +16,11 @@ using Azure.Core;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using static Domain.Constant.EmailType;
 using System.Text.Encodings.Web;
+using Domain.DTO;
+using Domain.IServices;
+using Infrastructure.Services;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Application.Features.Authentication.Command.CommandHandler
 {
@@ -23,10 +28,9 @@ namespace Application.Features.Authentication.Command.CommandHandler
         UserManager<ApplicationUser> _userManager,
         RoleManager<IdentityRole> _roleManager,
         IEmailSender _emailSender,
-    IMapper _mapper,
-         ILogger<RegisterCommandHandler> _logger
-        //IEmailSender _emailSender,
-        //IOptions<URLConfiguration> _config
+        IMapper _mapper,
+         ILogger<RegisterCommandHandler> _logger,
+        IGetIpAddress _getIpAddress
         ) : IRequestHandler<RegisterCommand, Response>
     {
 
@@ -36,34 +40,77 @@ namespace Application.Features.Authentication.Command.CommandHandler
             cancellationToken.ThrowIfCancellationRequested();
 
             if (request.register == null)
-                return Response.FailureResponse("Register payload cannot be null.");
+            {
+                return Response.FailureResponse(
+                    message: "Register payload cannot be null.",
+                      new ErrorModel
+                    {
+                        Error = "Request payload is null",
+                        ErrorLocation = "RegisterCommandHandler"
+                    }
+                );
+            }
 
             try
             {
                 // Check if the email is already taken
                 var existingUser = await _userManager.FindByNameAsync(request.register.Email);
                 if (existingUser != null)
-                    return Response.FailureResponse("The email address is already in use. Please choose a different one.");
+                {
+                    return Response.FailureResponse(
+                        message: "The email address is already in use. Please choose a different one.",
+                          new ErrorModel
+                        {
+                            Error = "Email already in use",
+                            ErrorLocation = "RegisterCommandHandler"
+                        }
+                    );
+                }
+
                 #region Create User
+                var getIpAddress = await _getIpAddress.GetIpAddressAsync();
+                if (getIpAddress == null || string.IsNullOrEmpty(getIpAddress.country) || string.IsNullOrEmpty(getIpAddress.city) || string.IsNullOrEmpty(getIpAddress.citylatlong))
+                {
+                    // Log the error and handle invalid IP address data
+                    _logger.LogWarning("Failed to retrieve a valid IP address. Using default values.");
+
+                    // Set default values if the IP address data is invalid
+                    getIpAddress = new GetIpLocation
+                    {
+                        country = "Unknown",
+                        city = "Unknown",
+                        citylatlong = "Unknown"
+                    };
+                }
                 // Map to ApplicationUser directly without needing a second mapping step
                 var user = new ApplicationUser
                 {
                     Name = request.register.Name,
                     Email = request.register.Email,
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = request.register.Email
+                    UserName = request.register.Email,
+                    RegisteredIpAddress = $"Country: {getIpAddress.country}, City: {getIpAddress.city}, CityLatLong: {getIpAddress.citylatlong}"
                 };
 
                 // Create the user with the provided password
                 var createUser = await _userManager.CreateAsync(user, request.register.Password);
                 cancellationToken.ThrowIfCancellationRequested();
                 #endregion Create User
+
                 // If creation fails, return the errors as a response
                 if (!createUser.Succeeded)
                 {
                     var errorMessages = string.Join(", ", createUser.Errors.Select(e => e.Description));
                     _logger.LogError("User creation failed: {ErrorMessages}", errorMessages);
-                    return Response.FailureResponse($"User creation failed: {errorMessages}");
+
+                    return Response.FailureResponse(
+                        message: "User creation failed.",
+                          new ErrorModel
+                        {
+                            Error = errorMessages,
+                            ErrorLocation = "RegisterCommandHandler"
+                        }
+                    );
                 }
 
                 #region Ensure roles exist and assign the user to a role
@@ -71,37 +118,48 @@ namespace Application.Features.Authentication.Command.CommandHandler
 
                 var roleResult = await _userManager.AddToRoleAsync(user, RoleNames.User);
                 string emailconfirmationtoken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
                 if (!roleResult.Succeeded)
                 {
                     if (string.IsNullOrEmpty(emailconfirmationtoken))
-                        return Response.FailureResponse("Something went wrong");
+                    {
+                        return Response.FailureResponse(
+                            message: "Something went wrong during role assignment.",
+                              new ErrorModel
+                            {
+                                Error = "No email confirmation token generated.",
+                                ErrorLocation = "RegisterCommandHandler"
+                            }
+                        );
+                    }
 
                     // Log any role assignment failures and return a response
                     _logger.LogError("Failed to assign role to user: {RoleErrors}", string.Join(", ", roleResult.Errors.Select(e => e.Description)));
-                    return Response.FailureResponse("User created but failed to assign roles.");
-                }
 
+                    return Response.FailureResponse(
+                        message: "User created but failed to assign roles.",
+                          new ErrorModel
+                        {
+                            Error = string.Join(", ", roleResult.Errors.Select(e => e.Description)),
+                            ErrorLocation = "RegisterCommandHandler"
+                        }
+                    );
+                }
                 #endregion Ensure roles exist and assign the user to a role
 
                 #region ConfirmEmail
-
-                //string callback_url = GenerateCallbackUrl(
-                //           frontendUrl: _config.Value!.FrontEndBaseURL!, email: request.registerPayload.Email,
-                //           token: emailconfirmationtoken, UrlType.EmailConfirmation);
-
-
-                string callback_url = "";
+                string callback_url = "";  // You should construct a valid URL here
 
                 string htmlMessage = string.Format(EmailBodyMessages.ConfirmEmailTemplate,
-                                           HtmlEncoder.Default.Encode(callback_url),
-                                           user.Name);
+                    HtmlEncoder.Default.Encode(callback_url),
+                    user.Name);
 
                 await _emailSender.SendEmailAsync(
-                email: user.Email,
-                subject: EmailSubjects.ConfirmEmail,
-                htmlMessage: htmlMessage
+                    email: user.Email,
+                    subject: EmailSubjects.ConfirmEmail,
+                    htmlMessage: htmlMessage
+                );
                 #endregion ConfirmEmail
-            );
 
                 return Response.SuccessResponse("User registered successfully.");
             }
@@ -109,9 +167,18 @@ namespace Application.Features.Authentication.Command.CommandHandler
             {
                 // Log unexpected exceptions
                 _logger.LogError(ex, "An unexpected error occurred during user registration.");
-                return Response.FailureResponse($"An error occurred: {ex.Message}");
+
+                return Response.FailureResponse(
+                    message: "An unexpected error occurred during user registration.",
+                      new ErrorModel
+                    {
+                        Error = ex.Message,
+                        ErrorLocation = "RegisterCommandHandler"
+                    }
+                );
             }
         }
+
 
         #region EnsureRolesExist
 

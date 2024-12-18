@@ -18,9 +18,22 @@ namespace Application.Features.Account.Command.CommandHandler
         {
             // Check if cancellation is requested at the start
             cancellationToken.ThrowIfCancellationRequested();
-                
+
             // Validate input parameters
-            ValidateResetPasswordRequest(request.resetPassword);
+            try
+            {
+                ValidateResetPasswordRequest(request.resetPassword);
+            }
+            catch (ArgumentException ex)
+            {
+                return Response.FailureResponse(
+                    message: "Invalid input parameters.", new ErrorModel
+                    {
+                        Error = ex.Message,
+                        ErrorLocation = "ResetPasswordCommandHandler"
+                    }
+                );
+            }
 
             // Find user by email
             var findUser = await _userManager.FindByEmailAsync(request.resetPassword.Email);
@@ -28,8 +41,15 @@ namespace Application.Features.Account.Command.CommandHandler
             {
                 // Log the error for traceability and throw a more specific exception
                 _logger.LogWarning($"Password reset attempt failed for non-existing user: {request.resetPassword.Email}");
-                return Response.FailureResponse($"User with email {request.resetPassword.Email} not found. Please enter a valid email.");
+                return Response.FailureResponse(
+                    message: $"User with email {request.resetPassword.Email} not found. Please enter a valid email.", new ErrorModel
+                    {
+                        Error = $"User with email {request.resetPassword.Email} not found.",
+                        ErrorLocation = "ResetPasswordCommandHandler"
+                    }
+                );
             }
+
 
             // Check for cancellation again before proceeding with the password reset
             cancellationToken.ThrowIfCancellationRequested();
@@ -67,9 +87,14 @@ namespace Application.Features.Account.Command.CommandHandler
         private Response HandleResetPasswordErrors(IEnumerable<IdentityError> errors)
         {
             // Log the errors for traceability
-            var errorMessages = errors.Select(e => e.Description).ToList();
-            _logger.LogError("Password reset failed: " + string.Join(", ", errorMessages));
-            return Response.FailureResponse($"Password reset failed: {string.Join(", ", errorMessages)}");
+            var errorMessages = string.Join(", ", errors.Select(e => e.Description));
+            return Response.FailureResponse(
+                message: "Password reset failed.", new ErrorModel
+                {
+                    Error = errorMessages,
+                    ErrorLocation = "ResetPasswordCommandHandler"
+                }
+            );
         }
     }
 }

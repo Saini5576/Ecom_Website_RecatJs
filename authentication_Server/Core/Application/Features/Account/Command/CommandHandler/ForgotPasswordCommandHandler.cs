@@ -45,21 +45,42 @@ namespace Application.Features.Account.Command.CommandHandler
             if (string.IsNullOrWhiteSpace(request.ForgotPassword?.Email))
             {
                 _logger.LogWarning("ForgotPassword request failed: Email is required.");
-                return Response.FailureResponse("Email address cannot be empty.");
+                return Response.FailureResponse(
+                    "Email address cannot be empty.",
+                    new ErrorModel
+                    {
+                        Error = "EmptyEmail",
+                        ErrorLocation = "ForgotPasswordCommandHandler",
+                        UserMessage = "Please provide a valid email address to reset your password."
+                    });
             }
 
             ApplicationUser user = await _userManager.FindByEmailAsync(request.ForgotPassword.Email);
             if (user == null)
             {
                 _logger.LogInformation("ForgotPassword request: User not found for email: {Email}", request.ForgotPassword.Email);
-                return Response.FailureResponse("No user found with the provided email address.");
+                return Response.FailureResponse(
+                    "No user found with the provided email address.",
+                    new ErrorModel
+                    {
+                        Error = "UserNotFound",
+                        ErrorLocation = "ForgotPasswordCommandHandler",
+                        UserMessage = "No account was found for the given email address."
+                    });
             }
 
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
             if (string.IsNullOrEmpty(resetToken))
             {
                 _logger.LogError("Failed to generate password reset token for user: {UserId}", user.Id);
-                return Response.FailureResponse("Unable to generate password reset token at this time.");
+                return Response.FailureResponse(
+                    "Unable to generate password reset token at this time.",
+                    new ErrorModel
+                    {
+                        Error = "ResetTokenGenerationFailed",
+                        ErrorLocation = "ForgotPasswordCommandHandler",
+                        UserMessage = "There was an issue generating your password reset link. Please try again later."
+                    });
             }
 
             string callbackUrl = EmailType.GenerateCallbackUrl(
@@ -87,9 +108,18 @@ namespace Application.Features.Account.Command.CommandHandler
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending password reset email to {Email}", request.ForgotPassword.Email);
-                return Response.FailureResponse("An error occurred while sending the password reset email.");
+                return Response.FailureResponse(
+                    "An error occurred while sending the password reset email.",
+                    new ErrorModel
+                    {
+                        Error = "EmailSendingFailed",
+                        ErrorLocation = "ForgotPasswordCommandHandler",
+                        UserMessage = "We encountered an error while sending the password reset email. Please try again later.",
+                        DeveloperMessage = ex.Message
+                    });
             }
         }
+
     }
 
 }

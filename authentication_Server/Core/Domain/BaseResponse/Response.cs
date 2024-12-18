@@ -7,42 +7,73 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Domain.BaseResponse;
-public class Response<TEntity> : ErrorField
+using System.Text.Json.Serialization;
+
+using System.Text.Json.Serialization;
+
+// Base Error Model
+public class ErrorModel
+{
+    public string? Error { get; set; }
+    public string? ErrorLocation { get; set; }
+    public string? UserMessage { get; set; }
+    public string? DeveloperMessage { get; set; }
+}
+
+// Base Response Class (non-generic)
+public class Response
+{
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Message { get; init; }
+
+    public bool Success { get; init; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ErrorModel? ErrorDetails { get; init; }
+
+    // Constructor
+    protected Response(string? message = null, bool success = false, ErrorModel? errorDetails = null)
+    {
+        Message = message;
+        Success = success;
+        ErrorDetails = errorDetails;
+    }
+
+    // Factory Methods
+    public static Response SuccessResponse(string? message = null)
+    {
+        return new Response(message, success: true);
+    }
+
+    public static Response FailureResponse(string? message = null, ErrorModel? errorDetails = null)
+    {
+        return new Response(message, success: false, errorDetails);
+    }
+}
+
+// Generic Response Class
+public class Response<TEntity> : Response
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public TEntity? Content { get; private set; }
 
-    public Response(TEntity? content = default(TEntity), string? message = default, bool success = default) =>
-                         (Message, Content, Success) = (message, content, success);
+    // Constructor
+    private Response(TEntity? content = default, string? message = null, bool success = false, ErrorModel? errorDetails = null)
+        : base(message, success, errorDetails)
+    {
+        Content = content;
+    }
 
-    public static Response<TEntity?> SuccessResponse() =>
-                                     new Response<TEntity?>(success: true);
-    public static Response<TEntity?> SuccessResponse(
-                    TEntity? content = default(TEntity),
-                     string? Message = default) =>
-                       new Response<TEntity?>(content, Message, success: true);
+    // Factory Methods
+    public static Response<TEntity> SuccessResponse(TEntity? content = default, string? message = null)
+    {
+        return new Response<TEntity>(content, message, success: true);
+    }
 
-    public static Response<TEntity?> FailureResponse(
-                 string? Message = default) =>
-                   new Response<TEntity?>(message: Message, success: false);
-
+    public static Response<TEntity> FailureResponse(string? message = null, ErrorModel? errorDetails = null)
+    {
+        return new Response<TEntity>(content: default, message, success: false, errorDetails);
+    }
 }
 
-public class Response : ErrorField
-{
-    public Response(string? message = default, bool success = default) =>
-                        (Message, Success) = (message, success);
 
-    public static Response SuccessResponse(string? Message = default) =>
-                           new Response(message: Message, success: true);
-
-    public static Response FailureResponse(string? Message = default) =>
-                          new Response(message: Message, success: false);
-}
-
-public class ErrorField 
-{
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Message { get; init; }
-    public bool Success { get; init; }
-}

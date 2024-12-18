@@ -16,6 +16,7 @@ using System.Net;
 using System.Text;
 
 using System.Threading.Tasks;
+using Domain.DTO;
 
 namespace Infrastructure
 {
@@ -23,13 +24,15 @@ namespace Infrastructure
     {
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            
             services.AddDbContext<ApplicationDbContext>(options =>
   options.UseSqlServer(
       configuration.GetConnectionString("BaseDBConnection"),
       b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
          services.AddScoped<IJwtTokenService, JwtTokenService>();
+         
          services.AddScoped<IEmailSender, EmailMessageSender>();
-         services.Configure<URLConfiguration>(configuration.GetSection(nameof(URLConfiguration)).Bind);
+            services.Configure<URLConfiguration>(configuration.GetSection(nameof(URLConfiguration)).Bind);
          SmtpSettings? emailSettings = configuration.GetSection(nameof(SmtpSettings)).Get<SmtpSettings>();
          services.AddFluentEmail(
             emailSettings!.DefaultFromEmail

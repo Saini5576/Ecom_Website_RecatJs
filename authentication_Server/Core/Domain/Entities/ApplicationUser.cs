@@ -13,5 +13,9 @@ namespace Domain.Entities
         public DateTime RefreshTokenExpiryTime { get; set; }
         public byte[] ProfilePicture { get; set; }
         public string Name { get; set; }
+        public string RegisteredIpAddress { get; set; }
+        public string CurrentLoginIpAddress { get; set; }
+        public DateTime LastLoginTime { get; set; }
+
     }
 }

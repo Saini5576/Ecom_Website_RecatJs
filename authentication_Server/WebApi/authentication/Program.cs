@@ -13,11 +13,13 @@ using Domain.IServices;
 using Infrastructure.Services;
 using Domain.Configuration;
 using Infrastructure.ExceptionHandler;
+using Domain.DTO;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedEmail = false;
@@ -61,14 +63,14 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
     options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
 });
-
-
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddScoped<IGetIpAddress, GetIpAddress>();
+builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
