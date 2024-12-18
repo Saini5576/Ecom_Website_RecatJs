@@ -82,7 +82,7 @@ namespace Application.Features.Account.Command.CommandHandler
             }
 
             try
-            {
+            { 
                 _logger.LogInformation("Starting email confirmation process for user with email: {Email}.", emailConfirmed.Email);
 
                 // Retrieve user by email
